@@ -29,7 +29,7 @@ export class UsersService {
   }
 
   findByUserEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({ where: { email }, raw: true, nest: true});
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
