@@ -1,0 +1,4 @@
+
+export enum REPOSITORY {
+  USERS = 'USERS_REPOSITORY'
+}
