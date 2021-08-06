@@ -4,25 +4,28 @@ import {
   Post,
   UseGuards
 } from "@nestjs/common";
-import { AuthGuard } from '@nestjs/passport';
 import { LoginReqDto } from "./dto/login-req.dto";
 import { ApiImplicitBody } from "@nestjs/swagger/dist/decorators/api-implicit-body.decorator";
 import { ApiTags } from "@nestjs/swagger";
-import { User } from "../users/entities/user.entity";
 import { UserDto } from "../users/dto/user.dto";
+import { LocalAuthGuard } from "./local-auth-guard";
+import { AuthService } from "./auth.service";
 
 
-
-@ApiTags('auth')
-@Controller('auth')
+@ApiTags("auth")
+@Controller("auth")
 export class AuthController {
+  constructor(
+    private authService: AuthService
+  ) {
+  }
 
-  @UseGuards(AuthGuard('local'))
-  @Post('login')
-  @ApiImplicitBody({content:null, name: 'user', type: LoginReqDto})
+  @UseGuards(LocalAuthGuard)
+  @Post("login")
+  @ApiImplicitBody({ content: null, name: "user", type: LoginReqDto })
   async login(
     @Request() req
-  ): Promise<UserDto> {
-    return req.user;
+  ) {
+    return this.authService.login(req.user);
   }
 }
