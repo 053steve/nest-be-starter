@@ -4,8 +4,10 @@ import { User } from "../../users/entities/user.entity";
 
 
 export class LoginResDto extends UserDto {
+
   @ApiProperty()
   token: string;
+
 
   constructor(user: User, token?: string) {
     super(user);

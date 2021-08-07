@@ -1,3 +1,4 @@
+require('./pgEnum-fix');
 import { Sequelize } from "sequelize-typescript";
 import { User } from "../../users/entities/user.entity";
 import { ConfigService } from '@nestjs/config';

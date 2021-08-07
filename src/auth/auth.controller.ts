@@ -17,8 +17,7 @@ import { AuthService } from "./auth.service";
 export class AuthController {
   constructor(
     private authService: AuthService
-  ) {
-  }
+  ) { }
 
   @UseGuards(LocalAuthGuard)
   @Post("login")

@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { REPOSITORY } from "../common/constants";
 import { User } from "./entities/user.entity";
+import { UserDto } from "./dto/user.dto";
 
 @Injectable()
 export class UsersService {
@@ -12,10 +13,13 @@ export class UsersService {
     private userRepository: typeof User
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return this.userRepository.create(createUserDto);
+  async create(createUserDto: CreateUserDto): Promise<UserDto> {
+
+    const newUser = await this.userRepository.create(createUserDto);
+    return new UserDto(newUser);
   }
 
+  //TODO Takeout user password
   async findAll(): Promise<User[]> {
     return this.userRepository.findAll<User>();
   }
