@@ -27,14 +27,11 @@ export const databaseProviders = [
         }
       });
 
-      const ext = (process.env.NODE_ENV == 'production') ? 'js' : 'ts';
+      // const ext = (process.env.NODE_ENV == 'production') ? 'js' : 'ts';
+      //
+      // const modelPaths = glob.sync(`**/*.entity.${ext}`, null).map(it => __dirname + it);
 
-      const modelPaths = glob.sync(`**/*.entity.${ext}`, null).map(it => __dirname + it);
 
-
-      // sequelize.addModels(modelPaths);
-
-      // TODO: Dynamic models add
       sequelize.addModels([User]);
 
       await sequelize.sync({force: false, alter: false, logging: true});

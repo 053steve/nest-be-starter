@@ -1,13 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards, ClassSerializerInterceptor, UseInterceptors } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  ParseIntPipe,
+  ClassSerializerInterceptor,
+  UseInterceptors
+} from "@nestjs/common";
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from "@nestjs/swagger";
-import { FindOneParams } from "./dto/FindOneParams.dto";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserDto } from "./dto/user.dto";
-
-
 
 
 @ApiTags('users')
@@ -16,43 +27,37 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @HttpCode(HttpStatus.OK)
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   @Get()
-  @HttpCode(HttpStatus.OK)
   async findAll() {
     const users = await this.usersService.findAll();
     return users.map(it => new UserDto(it.toJSON()));
   }
 
-
-  //TODO: FIX class validators for findOneParams
-  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
   @Get(':id')
-  async findOne(@Param('id') id: FindOneParams) {
-
-    const user = await this.usersService.findOne(+id);
-    return new UserDto(user.toJSON());
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   @Patch(':id')
-  @HttpCode(HttpStatus.OK)
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
-  remove(@Param('id') id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(+id);
   }
 }
