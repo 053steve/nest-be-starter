@@ -7,7 +7,6 @@ import {
 import { LoginReqDto } from "./dto/login-req.dto";
 import { ApiImplicitBody } from "@nestjs/swagger/dist/decorators/api-implicit-body.decorator";
 import { ApiTags } from "@nestjs/swagger";
-import { UserDto } from "../users/dto/user.dto";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { AuthService } from "./auth.service";
 
