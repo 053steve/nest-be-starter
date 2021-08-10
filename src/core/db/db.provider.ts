@@ -34,7 +34,7 @@ export const databaseProviders = [
 
       sequelize.addModels([User]);
 
-      await sequelize.sync({force: false, alter: true, logging: true});
+      await sequelize.sync({force: false, alter: false, logging: true});
       return sequelize;
     }
   }
