@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards, ClassSerializerInterceptor, UseInterceptors } from "@nestjs/common";
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from "@nestjs/swagger";
 import { FindOneParams } from "./dto/FindOneParams.dto";
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UserDto } from "./dto/user.dto";
+
+
 
 
 @ApiTags('users')
@@ -18,27 +21,38 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @HttpCode(HttpStatus.OK)
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return users.map(it => new UserDto(it.toJSON()));
   }
 
+
+  //TODO: FIX class validators for findOneParams
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Get(':id')
-  findOne(@Param('id') id: FindOneParams) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: FindOneParams) {
+
+    const user = await this.usersService.findOne(+id);
+    return new UserDto(user.toJSON());
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: FindOneParams, @Body() updateUserDto: UpdateUserDto) {
+  @HttpCode(HttpStatus.OK)
+  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: FindOneParams) {
+  @HttpCode(HttpStatus.OK)
+  remove(@Param('id') id: number) {
     return this.usersService.remove(+id);
   }
 }

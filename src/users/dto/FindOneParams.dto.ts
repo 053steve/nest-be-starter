@@ -1,10 +1,13 @@
-import { IsNumberString } from 'class-validator';
+import { IsNotEmpty, IsNumberString } from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform, Type } from "class-transformer";
 
 
 export class FindOneParams {
-
-  @ApiProperty()
+  @Type(() => Number)
   @IsNumberString()
+  @ApiProperty()
   id: number;
+
+
 }

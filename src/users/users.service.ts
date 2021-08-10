@@ -19,21 +19,20 @@ export class UsersService {
     return new UserDto(newUser);
   }
 
-  //TODO Takeout user password
   async findAll(): Promise<User[]> {
-    return this.userRepository.findAll<User>();
+    return await this.userRepository.findAll<User>({where: {}});
   }
 
   findOne(id: number) {
-    return this.userRepository.findOne({ where: { id } });
+    return this.userRepository.findOne({ where: { id }});
   }
 
   findByUsername(username: string) {
-    return this.userRepository.findOne({ where: { username } });
+    return this.userRepository.findOne({ where: { username }});
   }
 
   findByUserEmail(email: string) {
-    return this.userRepository.findOne({ where: { email }, raw: true, nest: true});
+    return this.userRepository.findOne({ where: { email }});
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

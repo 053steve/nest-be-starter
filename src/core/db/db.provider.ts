@@ -2,6 +2,7 @@ require('./pgEnum-fix');
 import { Sequelize } from "sequelize-typescript";
 import { ConfigService } from '@nestjs/config';
 import * as glob from 'glob';
+import { User } from '../../users/entities/user.entity';
 
 
 
@@ -31,7 +32,10 @@ export const databaseProviders = [
       const modelPaths = glob.sync(`**/*.entity.${ext}`, null).map(it => __dirname + it);
 
 
-      sequelize.addModels(modelPaths);
+      // sequelize.addModels(modelPaths);
+
+      // TODO: Dynamic models add
+      sequelize.addModels([User]);
 
       await sequelize.sync({force: false, alter: false, logging: true});
       return sequelize;
