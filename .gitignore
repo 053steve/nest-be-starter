@@ -399,3 +399,4 @@ env/.env.development
 env/.env.production
 env/.env.test
 dist
+.serverless

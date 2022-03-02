@@ -2,7 +2,7 @@ import {
   Controller,
   Request,
   Post,
-  UseGuards
+  UseGuards, HttpCode
 } from "@nestjs/common";
 import { LoginReqDto } from "./dto/login-req.dto";
 import { ApiImplicitBody } from "@nestjs/swagger/dist/decorators/api-implicit-body.decorator";
@@ -20,6 +20,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post("login")
+  @HttpCode(200)
   @ApiImplicitBody({ content: null, name: "user", type: LoginReqDto })
   async login(
     @Request() req

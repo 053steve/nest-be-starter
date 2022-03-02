@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   HttpCode,
-  HttpStatus,
   UseGuards,
   ParseIntPipe
 } from "@nestjs/common";
@@ -25,6 +24,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @HttpCode(201)
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
@@ -32,6 +32,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @Get()
+  @HttpCode(200)
   findAll() {
     return this.usersService.findAll();
   }
@@ -39,6 +40,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @Get(':id')
+  @HttpCode(200)
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(+id);
   }
@@ -46,6 +48,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @Patch(':id')
+  @HttpCode(200)
   update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
@@ -53,6 +56,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @Delete(':id')
+  @HttpCode(200)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(+id);
   }

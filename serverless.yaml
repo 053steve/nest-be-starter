@@ -1,0 +1,28 @@
+service: nest-example
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-include-dependencies
+
+
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+
+package:
+  excludeDevDependencies: false
+  individually: true
+
+
+functions:
+  main:
+    handler: dist/lambda.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'

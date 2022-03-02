@@ -1,6 +1,6 @@
 import { AllowNull, BeforeCreate, BeforeUpdate, Column, DataType, Model, Table } from "sequelize-typescript";
 import { CreateUserDto } from "../dto/create-user.dto";
-import * as bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { UserTypes } from "../../common/constants";
 
 

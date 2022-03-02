@@ -2,7 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import {jwtConstants} from '../common/constants/jwtConstants';
-import * as bcrypt from "bcrypt";
+// import bcrypt from "bcryptjs";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

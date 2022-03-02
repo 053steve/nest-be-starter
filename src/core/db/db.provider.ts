@@ -1,4 +1,5 @@
 require('./pgEnum-fix');
+import * as pg from 'pg';
 import { Sequelize } from "sequelize-typescript";
 import { ConfigService } from '@nestjs/config';
 import * as glob from 'glob';
@@ -14,6 +15,7 @@ export const databaseProviders = [
     useFactory: async (configService: ConfigService) => {
       const sequelize = new Sequelize({
         dialect: configService.get('database.dialect'),
+        dialectModule: pg,
         host: configService.get<string>('database.host'),
         port: configService.get<number>('database.port'),
         username: configService.get<string>('database.username'),
