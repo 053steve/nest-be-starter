@@ -3,7 +3,7 @@ import * as pg from 'pg';
 import { Sequelize } from "sequelize-typescript";
 import { ConfigService } from '@nestjs/config';
 import * as glob from 'glob';
-import {User} from '../../users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 
 
@@ -29,9 +29,9 @@ export const databaseProviders = [
         }
       });
 
-      const ext = (process.env.NODE_ENV == 'production') ? 'js' : 'ts';
-
-      const modelPaths = glob.sync(`**/*.entity.${ext}`, null).map(it => __dirname + it);
+      // const ext = (process.env.NODE_ENV == 'production') ? 'js' : 'ts';
+      //
+      // const modelPaths = glob.sync(`**/*.entity.${ext}`, null).map(it => __dirname + it);
 
 
       sequelize.addModels([User]);

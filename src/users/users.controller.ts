@@ -8,14 +8,16 @@ import {
   Delete,
   HttpCode,
   UseGuards,
-  ParseIntPipe
+  ParseIntPipe,
+  ClassSerializerInterceptor,
+  UseInterceptors
 } from "@nestjs/common";
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-
+import { UserDto } from "./dto/user.dto";
 
 
 @ApiTags('users')
@@ -29,12 +31,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @Get()
   @HttpCode(200)
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return users.map(it => new UserDto(it.toJSON()));
   }
 
   @UseGuards(JwtAuthGuard)

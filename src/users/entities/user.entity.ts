@@ -1,7 +1,8 @@
-import { AllowNull, BeforeCreate, BeforeUpdate, Column, DataType, Model, Table } from "sequelize-typescript";
+import { AllowNull, BeforeCreate, BeforeUpdate, Column, DataType, Model, Table, Default } from "sequelize-typescript";
 import { CreateUserDto } from "../dto/create-user.dto";
 import bcrypt from "bcryptjs";
 import { UserTypes } from "../../common/constants";
+
 
 
 @Table
@@ -24,8 +25,13 @@ export class User extends Model {
   @Column(DataType.TEXT)
   password: string;
 
+  @Default(UserTypes.Seller)
   @Column(DataType.ENUM({values: Object.keys(UserTypes)}))
   user_type: UserTypes;
+
+  toJSON() {
+    return {...super.toJSON()};
+  }
 
 
   @BeforeCreate
