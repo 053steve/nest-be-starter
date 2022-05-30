@@ -34,6 +34,12 @@ export class UserRepository {
     const startDate = new Date();
     startDate.setFullYear( startDate.getFullYear() - 10 );
 
+    const test = {
+      "email": "test1@test.com",
+      "hashLinker": "USER",
+      "createdAt": "2022-05-30T08:26:38.522Z"
+    }
+
     const params = {
       TableName: Tables.TestUser,
       IndexName: 'gsi_0',
@@ -42,7 +48,9 @@ export class UserRepository {
         ":start_date": startDate.toISOString(),
         ":end_date": new Date().toISOString(),
         ":hashLinker": HashLinkers.USER
-      }
+      },
+      Limit: 1,
+      ExclusiveStartKey: test
     };
 
     const result = await ddbDocClient.send(new QueryCommand(params));

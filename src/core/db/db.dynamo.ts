@@ -8,8 +8,8 @@ import { ConfigService } from '@nestjs/config';
 
 const configService = new ConfigService();
 
-console.log('yo');
-console.log(configService.get(configService.get('aws.secretKey')));
+// console.log(process.env)
+// console.log(configService.get('aws.accessKey'))
 
 const marshallOptions = {
   // Whether to automatically convert empty strings, blobs, and sets to `null`.
@@ -28,8 +28,8 @@ const unmarshallOptions = {
 const translateConfig = { marshallOptions, unmarshallOptions };
 
 const dynamoClient = new DynamoDBClient({
-  credentials: {accessKeyId: 'AKIA4TE3UEKMNTJDHORG', secretAccessKey: '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'},
-  region: 'ap-southeast-1'});
+  credentials: {accessKeyId: process.env.AWS_ACCESS_KEY, secretAccessKey: process.env.AWS_SECRET_KEY},
+  region: process.env.AWS_REGION});
 
 const ddbDocClient = DynamoDBDocumentClient.from(dynamoClient, translateConfig);
 

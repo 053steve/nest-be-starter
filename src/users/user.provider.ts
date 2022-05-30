@@ -1,9 +1,12 @@
-import { User } from './entities/user.entity';
-// import { REPOSITORY } from "../common/constants";
+// import { User } from './entities/user.entity';
+// // import { REPOSITORY } from "../common/constants";
+import {UserRepository} from './user.repository';
+
+
 
 export const userProviders = [
-  // {
-  //   provide: REPOSITORY.USERS,
-  //   useValue: User,
-  // },
+  {
+    provide: 'USER_REPO',
+    useValue: UserRepository,
+  },
 ];
