@@ -19,6 +19,7 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserDto } from "./dto/user.dto";
 import { FindOneParams } from "./dto/FindOneParams.dto";
+import { ListUserDto } from "./dto/list-user.dto";
 
 
 @ApiTags('users')
@@ -37,8 +38,10 @@ export class UsersController {
   // @ApiBearerAuth('JWT-auth')
   @Get()
   @HttpCode(200)
-  async list() {
-    const users = await this.usersService.findAll();
+  async list(
+    @Query() query: ListUserDto
+  ) {
+    const users = await this.usersService.findAll(query);
     return users;
     // return users.map(it => new UserDto(it.toJSON()));
   }

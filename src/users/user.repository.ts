@@ -6,6 +6,7 @@ import { FindOneParams } from "./dto/FindOneParams.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { ddbDocClient } from "../core/db/db.dynamo";
 import { generateUpdateQuery } from "../common/utils/dynamoHelpers";
+import { ListUserDto } from "./dto/list-user.dto";
 
 
 export class UserRepository {
@@ -29,28 +30,29 @@ export class UserRepository {
     return newUser;
   }
 
-  async list(): Promise<User[]> {
+  async list(dto: ListUserDto): Promise<User[]> {
 
-    const startDate = new Date();
-    startDate.setFullYear( startDate.getFullYear() - 10 );
+    const exclusiveStartKey = {};
 
-    const test = {
-      "email": "test1@test.com",
-      "hashLinker": "USER",
-      "createdAt": "2022-05-30T08:26:38.522Z"
+    if (dto.startKeyEmail && dto.startKeyCreatedAt) {
+      exclusiveStartKey['email'] = dto.startKeyEmail;
+      exclusiveStartKey['createdAt'] = dto.startKeyCreatedAt;
+      exclusiveStartKey['hashLinker'] = HashLinkers.USER;
     }
+
+    const limit = Number(dto.limit) || 10;
 
     const params = {
       TableName: Tables.TestUser,
       IndexName: 'gsi_0',
-      KeyConditionExpression: "createdAt BETWEEN :start_date AND :end_date and hashLinker = :hashLinker",
+      // KeyConditionExpression: "createdAt BETWEEN :start_date AND :end_date and hashLinker = :hashLinker",
+      KeyConditionExpression: "createdAt < :now and hashLinker = :hashLinker",
       ExpressionAttributeValues: {
-        ":start_date": startDate.toISOString(),
-        ":end_date": new Date().toISOString(),
+        ":now": new Date().toISOString(),
         ":hashLinker": HashLinkers.USER
       },
-      Limit: 1,
-      ExclusiveStartKey: test
+      Limit: limit,
+      ...exclusiveStartKey && { ExclusiveStartKey: exclusiveStartKey }
     };
 
     const result = await ddbDocClient.send(new QueryCommand(params));

@@ -7,6 +7,7 @@ import { User } from "./models/user.model";
 import { UserRepository } from './user.repository';
 import { FindOneParams } from "./dto/FindOneParams.dto";
 import { handleExceptions } from "../common/utils/exeptionHandlers";
+import { ListUserDto } from "./dto/list-user.dto";
 
 
 @Injectable()
@@ -33,8 +34,8 @@ export class UsersService {
 
 
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.list();
+  async findAll(dto: ListUserDto): Promise<User[]> {
+    return await this.userRepository.list(dto);
   }
 
   // findOne(id: number) {
