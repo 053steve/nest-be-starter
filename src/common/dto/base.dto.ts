@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class Base {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
   createdAt?: Date;

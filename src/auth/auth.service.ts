@@ -15,10 +15,10 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<User> {
 
-    const user = await this.usersService.findByUserEmail(email);
-    if (user && this.validatePassword(user.password, pass)) {
-      return user;
-    }
+    // const user = await this.usersService.findByUserEmail(email);
+    // if (user && this.validatePassword(user.password, pass)) {
+    //   return user;
+    // }
 
     return null;
   }

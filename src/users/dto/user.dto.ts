@@ -19,11 +19,6 @@ export class UserDto extends Base {
   @ApiProperty()
   username: string;
 
-  
-  @ApiProperty()
-  @Exclude()
-  password: string;
-
   @ApiProperty()
   user_type: UserTypes;
 

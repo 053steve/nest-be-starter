@@ -1,3 +1,6 @@
+
+console.log(process.env)
+
 export default () => ({
   port: parseInt(process.env.PORT, 10) || 4000,
   database: {
@@ -14,5 +17,10 @@ export default () => ({
       idle: parseInt(process.env.DB_POOL_IDLE)
     }
   },
-  salt: process.env.SALT
+  salt: process.env.SALT,
+  aws: {
+    accessKey: process.env.AWS_ACCESS_KEY,
+    secretKey: process.env.AWS_SECRET_KEY,
+    region: process.env.AWS_REGION,
+  }
 });

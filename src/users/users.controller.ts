@@ -10,7 +10,7 @@ import {
   UseGuards,
   ParseIntPipe,
   ClassSerializerInterceptor,
-  UseInterceptors
+  UseInterceptors, Query
 } from "@nestjs/common";
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,6 +18,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserDto } from "./dto/user.dto";
+import { FindOneParams } from "./dto/FindOneParams.dto";
 
 
 @ApiTags('users')
@@ -31,37 +32,38 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
+  // @UseInterceptors(ClassSerializerInterceptor)
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('JWT-auth')
   @Get()
   @HttpCode(200)
-  async findAll() {
+  async list() {
     const users = await this.usersService.findAll();
-    return users.map(it => new UserDto(it.toJSON()));
+    return users;
+    // return users.map(it => new UserDto(it.toJSON()));
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @Get(':id')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('JWT-auth')
+  @Get('/:email')
   @HttpCode(200)
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('email') email: string) {
+    return this.usersService.findByUserEmail({ email });
   }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @Patch(':id')
+  //
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('JWT-auth')
+  @Patch(':email')
   @HttpCode(200)
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(email, updateUserDto);
   }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @Delete(':id')
+  //
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('JWT-auth')
+  @Delete(':email')
   @HttpCode(200)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.remove(+id);
+  remove(@Param('email') email: string) {
+    return this.usersService.remove(email);
   }
 }

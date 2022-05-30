@@ -1,45 +1,83 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { REPOSITORY } from "../common/constants";
-import { User } from "./entities/user.entity";
+
 import { UserDto } from "./dto/user.dto";
+import { User } from "./models/user.model";
+import { UserRepository } from './user.repository';
+import { FindOneParams } from "./dto/FindOneParams.dto";
+import { handleExceptions } from "../common/utils/exeptionHandlers";
+
 
 @Injectable()
 export class UsersService {
 
-  constructor(
-    @Inject(REPOSITORY.USERS)
-    private userRepository: typeof User
-  ) {}
+  private userRepository: UserRepository;
 
-  async create(createUserDto: CreateUserDto): Promise<UserDto> {
-
-    const newUser = await this.userRepository.create(createUserDto);
-    return new UserDto(newUser);
+  constructor() {
+    this.userRepository = new UserRepository();
   }
+
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+
+    try {
+      const newUser = await this.userRepository.create(createUserDto);
+      return newUser;
+
+    } catch (err) {
+      handleExceptions(err);
+    }
+
+  }
+
+
 
   async findAll(): Promise<User[]> {
-    return await this.userRepository.findAll<User>({where: {}});
+    return await this.userRepository.list();
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOne({ where: { id }});
+  // findOne(id: number) {
+  //   return this.userRepository.findOne({ where: { id }});
+  // }
+  //
+  // findByUsername(username: string) {
+  //   return this.userRepository.findOne({ where: { username }});
+  // }
+  //
+  async findByUserEmail(data: FindOneParams)  {
+    try {
+
+      const user = this.userRepository.getOne(data);
+
+      if (!user) {
+        throw 404;
+      }
+
+      return user;
+
+    } catch (err) {
+
+    }
+
   }
 
-  findByUsername(username: string) {
-    return this.userRepository.findOne({ where: { username }});
+  update(email, updateUserDto: UpdateUserDto) {
+
+    try {
+      return this.userRepository.update(email, updateUserDto)
+    } catch (err) {
+      handleExceptions(err);
+    }
+
   }
 
-  findByUserEmail(email: string) {
-    return this.userRepository.findOne({ where: { email }});
-  }
+  remove(email: string) {
+    try {
+      return this.userRepository.delete(email);
+    } catch (err) {
+      handleExceptions(err);
+    }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(updateUserDto, {where: {id}});
-  }
-
-  remove(id: number) {
-    return this.userRepository.destroy({where: {id}});
   }
 }

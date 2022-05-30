@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: Some APIs
+  description: API for something
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    JWT-auth:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+      name: JWT
+      description: Enter JWT token
+      in: header
+  schemas:
+    CreateUserDto:
+      type: object
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+      required:
+        - firstname
+        - lastname
+        - username
+        - password
+        - email
+    UpdateUserDto:
+      type: object
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+      required:
+        - firstname
+        - lastname
+        - username
+        - password
+        - email
+    LoginReqDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+paths:
+  /users:
+    post:
+      operationId: UsersController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - users
+    get:
+      operationId: UsersController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - users
+      security:
+        - JWT-auth: []
+  /users/{id}:
+    get:
+      operationId: UsersController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+      tags:
+        - users
+      security:
+        - JWT-auth: []
+    patch:
+      operationId: UsersController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: ''
+      tags:
+        - users
+      security:
+        - JWT-auth: []
+    delete:
+      operationId: UsersController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+      tags:
+        - users
+      security:
+        - JWT-auth: []
+  /auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginReqDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - auth

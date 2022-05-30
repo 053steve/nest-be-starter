@@ -1,15 +1,27 @@
-service: nest-example
+service: nest-dynamodb-example
 
 plugins:
   - serverless-offline
   - serverless-plugin-include-dependencies
 
-
-
 provider:
   name: aws
   runtime: nodejs14.x
+  memorySize: 512
+  timeout: 30
+  stage: development
+  region: ap-southeast-1
+  environment:
+    USERS_TABLE_NAME: ${self:custom.usersTable.name}
+    iamRoleStatements: ${file(iam/usersTableIAM.yml)}
 
+  iamRoleStatements:
+    - ${file(iam/usersTableIAM.yml)}
+
+custom:
+  usersTable:
+    name: ${self:provider.stage}-users
+    arn: !GetAtt usersTable.Arn
 
 package:
   excludeDevDependencies: false

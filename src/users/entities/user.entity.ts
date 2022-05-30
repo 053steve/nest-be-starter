@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 import { UserTypes } from "../../common/constants";
 
 
-
 @Table
 export class User extends Model {
 
@@ -25,7 +24,7 @@ export class User extends Model {
   @Column(DataType.TEXT)
   password: string;
 
-  @Default(UserTypes.Seller)
+  // @Default(UserTypes.Seller)
   @Column(DataType.ENUM({values: Object.keys(UserTypes)}))
   user_type: UserTypes;
 
