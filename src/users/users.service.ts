@@ -6,7 +6,7 @@ import { UserDto } from "./dto/user.dto";
 import { User } from "./models/user.model";
 import { UserRepository } from './user.repository';
 import { FindOneParams } from "./dto/FindOneParams.dto";
-import { handleExceptions } from "../common/utils/exeptionHandlers";
+import { handleExceptions } from "../common/utils/exceptionHandlers";
 import { ListUserDto } from "./dto/list-user.dto";
 
 
@@ -58,7 +58,7 @@ export class UsersService {
       return user;
 
     } catch (err) {
-
+      handleExceptions(err);
     }
 
   }
