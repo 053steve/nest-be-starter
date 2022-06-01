@@ -34,6 +34,7 @@ export class AuthController {
   @HttpCode(201)
   signup(@Body() createUserDto: CreateUserDto) {
     return this.authService.signup(createUserDto);
+    // will need to save username and userSub when create in local DB
   }
 
   @Post("confirm-signup")
@@ -41,4 +42,6 @@ export class AuthController {
   confirmSignup(@Body() dto: ConfirmSignupDto) {
     return this.authService.confirmSignup(dto);
   }
+
+
 }

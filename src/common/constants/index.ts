@@ -6,6 +6,9 @@ export enum REPOSITORY {
 
 export enum UserTypes {
   Admin = 'Admin',
-  Staff = 'Staff',
-  Seller = 'Seller'
+  Staff = 'Staff'
+}
+
+export enum AUTH_CONFIRM_RESULT {
+  SUCCESS = 'SUCCESS'
 }

@@ -12,6 +12,8 @@ import { LoginResDto } from "./dto/login-res.dto";
 import { User } from '../users/entities/user.entity';
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { ConfirmSignupDto } from "./dto/confirm-signup.dto";
+import { handleExceptions } from "../common/utils/exceptionHandler";
+import { AUTH_CONFIRM_RESULT, UserTypes } from "../common/constants";
 
 
 @Injectable()
@@ -42,7 +44,7 @@ export class AuthService {
   }
 
   async signup(dto: CreateUserDto):Promise<any> {
-    const {firstname, lastname, username, email, password, phoneNumber} = dto;
+    const { firstname, lastname, username, email, password, phoneNumber } = dto;
 
     const attributeList = [];
 
@@ -72,17 +74,24 @@ export class AuthService {
       Value: phoneNumber,
     }
 
+    const userType = {
+      Name: 'custom:user_type',
+      Value: UserTypes.Staff
+    }
+
     const attributeEmail = new CognitoUserAttribute(emailData);
     const attributePhoneNumber = new CognitoUserAttribute(phone_number);
     const attributeFirstName = new CognitoUserAttribute(fistNameData);
     const attributeLastName = new CognitoUserAttribute(lastnameData);
     const attributeUsername = new CognitoUserAttribute(usernameData);
+    const attributeUserType = new CognitoUserAttribute(userType);
 
     attributeList.push(attributeEmail);
     attributeList.push(attributeFirstName);
     attributeList.push(attributePhoneNumber);
     attributeList.push(attributeLastName);
     attributeList.push(attributeUsername);
+    attributeList.push(attributeUserType);
 
 
     try {
@@ -124,13 +133,13 @@ export class AuthService {
 
       });
 
-      if (confirmResult === 'SUCCESS') {
+      if (confirmResult === AUTH_CONFIRM_RESULT.SUCCESS) {
         return confirmResult;
       } else {
         throw 404;
       }
     } catch (err) {
-      return new BadRequestException(err);
+      handleExceptions(err);
     }
 
   }
