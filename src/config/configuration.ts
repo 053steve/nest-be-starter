@@ -14,5 +14,9 @@ export default () => ({
       idle: parseInt(process.env.DB_POOL_IDLE)
     }
   },
-  salt: process.env.SALT
+  salt: process.env.SALT,
+  cognito: {
+    userPoolId: process.env.AWS_AUTH_USER_POOL_ID,
+    clientId: process.env.AWS_AUTH_CLIENT_ID
+  }
 });
