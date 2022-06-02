@@ -1,21 +1,38 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
-import {jwtConstants} from '../common/constants/jwtConstants';
-// import bcrypt from "bcryptjs";
+import { Injectable } from "@nestjs/common";
+import {UsersService} from '../users/users.service';
+import { passportJwtSecret } from 'jwks-rsa';
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(
+    private usersService: UsersService,
+    private configService: ConfigService
+  ) {
+
+    const issuer = configService.get('cognito.issuer');
+    const jwksUri = `${issuer}/.well-known/jwks.json`;
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtConstants.secret,
+      // secretOrKey: authService.secretKey,
+      secretOrKeyProvider: passportJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri
+      }),
+      issuer,
+      algorithms: ['RS256'],
     });
   }
 
-  //TODO: Have to do something with this
+
   async validate(payload: any) {
-    return { userId: payload.id, username: payload.username };
+    const user = await this.usersService.findUserBySub(payload.sub);
+    return user.toJSON();
   }
 }

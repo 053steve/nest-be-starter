@@ -1,16 +1,20 @@
 import { UserDto } from "../../users/dto/user.dto";
-import { ApiProperty } from "@nestjs/swagger";
+import { AuthenticateRes } from "../auth.interface";
 import { User } from "../../users/entities/user.entity";
 
 
-export class LoginResDto extends UserDto {
+export class LoginResDto {
 
-  @ApiProperty()
-  token: string;
+  idToken: string
+  accessToken: string
+  refreshToken: string
+  user: UserDto
 
+  constructor(authRes: AuthenticateRes, user: UserDto) {
 
-  constructor(user: User, token?: string) {
-    super(user);
-    this.token = token;
+    this.idToken = authRes.idToken;
+    this.accessToken = authRes.accessToken;
+    this.refreshToken = authRes.refreshToken;
+    this.user = user;
   }
 }

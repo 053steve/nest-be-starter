@@ -4,17 +4,19 @@ import { ConfigService } from "@nestjs/config";
 
 import {
   CognitoUserPool,
-  CognitoUserAttribute, CognitoUser
+  CognitoUser,
+  AuthenticationDetails,
+
 } from "amazon-cognito-identity-js";
 
-import bcrypt from "bcryptjs";
 import { LoginResDto } from "./dto/login-res.dto";
-import { User } from "../users/entities/user.entity";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { ConfirmSignupDto } from "./dto/confirm-signup.dto";
 import { handleExceptions } from "../common/utils/exceptionHandler";
 import { AUTH_CONFIRM_RESULT, UserTypes } from "../common/constants";
-import { SignupRes } from "./auth.interface";
+import { AuthenticateRes, SignupRes } from "./auth.interface";
+import { LoginReqDto } from "./dto/login-req.dto";
+import { UserDto } from "../users/dto/user.dto";
 
 
 @Injectable()
@@ -33,77 +35,23 @@ export class AuthService {
     });
   }
 
-
-  async validateUser(email: string, pass: string): Promise<User> {
-
-    const user = await this.usersService.findByUserEmail(email);
-    // if (user && this.validatePassword(user.password, pass)) {
-    //   return user;
-    // }
-
-    return null;
+  get secretKey() {
+    return this.configService.get("salt");
   }
 
-  async signup(userDto: CreateUserDto): Promise<SignupRes> {
 
-    const { firstname, lastname, username, email, password, phoneNumber } = userDto;
+  async signup(userDto: CreateUserDto): Promise<SignupRes> {
 
     // set as staff by default if don't have
     const user_type = userDto.user_type || UserTypes.Staff;
     userDto.user_type = user_type;
 
-    const attributeList = [];
-
-    // map to cognito user attribute
-    const fistNameData = {
-      Name: "given_name",
-      Value: firstname
-    };
-
-    const lastnameData = {
-      Name: "family_name",
-      Value: lastname
-    };
-
-    const usernameData = {
-      Name: "preferred_username",
-      Value: username
-    };
-
-    const emailData = {
-      Name: "email",
-      Value: email
-    };
-
-    const phone_number = {
-      Name: "phone_number",
-      Value: phoneNumber
-    };
-
-    const userType = {
-      Name: "custom:user_type",
-      Value: user_type
-    };
-
-    const attributeEmail = new CognitoUserAttribute(emailData);
-    const attributePhoneNumber = new CognitoUserAttribute(phone_number);
-    const attributeFirstName = new CognitoUserAttribute(fistNameData);
-    const attributeLastName = new CognitoUserAttribute(lastnameData);
-    const attributeUsername = new CognitoUserAttribute(usernameData);
-    const attributeUserType = new CognitoUserAttribute(userType);
-
-    attributeList.push(attributeEmail);
-    attributeList.push(attributeFirstName);
-    attributeList.push(attributePhoneNumber);
-    attributeList.push(attributeLastName);
-    attributeList.push(attributeUsername);
-    attributeList.push(attributeUserType);
-
+    const attributeList = this.mapObjToCognitoAttributeList(userDto);
 
     try {
 
       const createUserResult: any = await new Promise((resolve, reject) => {
-        this.userPool.signUp(email, password, attributeList, null, (err, result) => {
+        this.userPool.signUp(userDto.email, userDto.password, attributeList, null, (err, result) => {
           if (err) {
             reject(err.message);
           }
@@ -116,11 +64,54 @@ export class AuthService {
         userSub: createUserResult.userSub,
         userConfirmed: createUserResult.userConfirmed,
         user: userDto
-      }
+      };
 
     } catch (err) {
       handleExceptions(err);
     }
+  }
+
+  mapObjToCognitoAttributeList = (userDto) => {
+    const attributeList = [];
+
+    // map to cognito user attribute
+    for (const [key, value] of Object.entries(userDto)) {
+
+      let objName = {};
+
+      switch (key) {
+        case 'firstname':
+          objName = 'given_name'
+          break;
+
+        case 'lastname':
+          objName = 'family_name'
+          break;
+
+        case 'username':
+          objName = 'preferred_username'
+          break;
+
+        case 'email':
+          objName = 'email'
+          break;
+
+        case 'phoneNumber':
+          objName = 'phone_number'
+          break;
+
+      }
+
+      const dataObj = {
+        Name: objName,
+        Value: value
+      }
+
+      attributeList.push(dataObj);
+
+    }
+
+    return attributeList;
   }
 
   async confirmSignup(dto: ConfirmSignupDto): Promise<any> {
@@ -156,10 +147,64 @@ export class AuthService {
 
   }
 
-  async login(user): Promise<LoginResDto> {
+  async login(data): Promise<LoginResDto> {
 
-    // const token = this.generateToken(user);
-    return new LoginResDto(user);
+    const foundUser = await this.usersService.findByUserEmail(data.user?.email)
+    const userDto = new UserDto(foundUser.toJSON());
+    return new LoginResDto(data, userDto);
+
+  }
+
+  async cognitoAuthenticate(dto: LoginReqDto): Promise<AuthenticateRes> {
+
+    const authData = {
+      Username : dto.email,
+      Password : dto.password,
+    };
+
+    const authDetails = new AuthenticationDetails(authData);
+
+    const userData = {
+      Username: dto.email,
+      Pool: this.userPool
+    };
+
+    const cognitoUser = new CognitoUser(userData);
+
+    try {
+
+      const authRes:AuthenticateRes = await new Promise((resolve, reject) => {
+        cognitoUser.authenticateUser(authDetails, {
+          onSuccess: (result) => {
+            const accessToken = result.getAccessToken().getJwtToken();
+            const idToken = result.getIdToken().getJwtToken();
+            const refreshToken = result.getRefreshToken().getToken();
+            const payload = result.getIdToken().decodePayload();
+            const user = new UserDto(payload);
+
+            resolve({
+              accessToken,
+              idToken,
+              refreshToken,
+              user
+            });
+          },
+          onFailure: (err) => {
+            reject(err);
+          },
+        });
+      });
+
+
+      return authRes;
+
+    } catch (err) {
+      handleExceptions(err);
+    }
+
+
+
+
 
   }
 

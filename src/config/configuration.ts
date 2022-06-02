@@ -17,6 +17,12 @@ export default () => ({
   salt: process.env.SALT,
   cognito: {
     userPoolId: process.env.AWS_AUTH_USER_POOL_ID,
-    clientId: process.env.AWS_AUTH_CLIENT_ID
+    clientId: process.env.AWS_AUTH_CLIENT_ID,
+    issuer: process.env.ISSUER
+  },
+  aws: {
+    accessKey: process.env.AWS_ACCESS_KEY,
+    secretKey: process.env.AWS_SECRET_KEY,
+    region: process.env.AWS_REGION
   }
 });

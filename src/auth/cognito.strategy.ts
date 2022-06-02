@@ -1,9 +1,9 @@
 import { Strategy } from 'passport-custom';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserDto } from "../users/dto/user.dto";
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
+import { LoginReqDto } from './dto/login-req.dto';
 
 
 @Injectable()
@@ -11,17 +11,20 @@ export class CognitoStrategy extends PassportStrategy(Strategy, 'cognito') {
 
 
   constructor(
-    private configService: ConfigService
+    private configService: ConfigService,
+    private authService: AuthService
   ) {
     super();
   }
 
-  async validate(): Promise<any> {
-    const test = this.configService.get('cognito.userPoolId');
-    console.log('config test');
-    console.log(test);
-    const valid = true;
-    if(!valid) throw new UnauthorizedException();
-    return {id: "123", name: "test"};
+  async validate(req: Request): Promise<any> {
+      const body = req.body as any
+      const authRes = await this.authService.cognitoAuthenticate(body)
+      if (authRes) {
+        return authRes;
+      }
+
+      return null;
+
   }
 }
