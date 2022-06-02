@@ -7,36 +7,13 @@ import { Exclude } from 'class-transformer';
 
 export class UserDto extends Base {
 
-  @ApiProperty()
   firstname: string;
-
-  @ApiProperty()
   lastname: string;
-
-  @ApiProperty()
   email: string;
-
-  @ApiProperty()
   username: string;
+  user_type: string;
+  userConfirmed: boolean;
 
-  
-  @ApiProperty()
-  @Exclude()
-  password: string;
-
-  @ApiProperty()
-  user_type: UserTypes;
-
-
-  // constructor(user: User) {
-  //   super();
-  //   this.id = user.id;
-  //   this.email = user.email;
-  //   this.firstname = user.firstname;
-  //   this.lastname = user.lastname;
-  //   this.username = user.username;
-  //   this.user_type = user.user_type;
-  // }
 
   constructor(partial: Partial<User>) {
     super();

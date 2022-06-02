@@ -11,13 +11,16 @@ import {CognitoAuthGuard} from './cognito.guard';
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { ConfirmSignupDto } from "./dto/confirm-signup.dto";
+import { UsersService } from "../users/users.service";
+import { UserTypes } from "src/common/constants";
 
 
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UsersService
   ) { }
 
   @UseGuards(CognitoAuthGuard)
@@ -32,15 +35,32 @@ export class AuthController {
 
   @Post("signup")
   @HttpCode(201)
-  signup(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signup(createUserDto);
+  async signup(@Body() createUserDto: CreateUserDto) {
+    const cognitoUserRes = await this.authService.signup(createUserDto);
+
     // will need to save username and userSub when create in local DB
+    const newUser = this.userService.create({
+      email: cognitoUserRes.email,
+      sub: cognitoUserRes.userSub,
+      userConfirmed: cognitoUserRes.userConfirmed,
+      firstname: cognitoUserRes.user.firstname,
+      lastname: cognitoUserRes.user.lastname,
+      username: cognitoUserRes.user.username,
+      phoneNumber: cognitoUserRes.user.phoneNumber,
+      user_type: cognitoUserRes.user.user_type,
+    });
+
+    return;
   }
 
   @Post("confirm-signup")
   @HttpCode(200)
-  confirmSignup(@Body() dto: ConfirmSignupDto) {
-    return this.authService.confirmSignup(dto);
+  async confirmSignup(@Body() dto: ConfirmSignupDto) {
+    await this.authService.confirmSignup(dto);
+    await this.userService.updateByEmail(dto.email, {
+      userConfirmed: true
+    });
+    return;
   }
 
 

@@ -14,6 +14,7 @@ import { CreateUserDto } from "../users/dto/create-user.dto";
 import { ConfirmSignupDto } from "./dto/confirm-signup.dto";
 import { handleExceptions } from "../common/utils/exceptionHandler";
 import { AUTH_CONFIRM_RESULT, UserTypes } from "../common/constants";
+import { SignupRes } from "./auth.interface";
 
 
 @Injectable()
@@ -43,8 +44,13 @@ export class AuthService {
     return null;
   }
 
-  async signup(dto: CreateUserDto): Promise<any> {
-    const { firstname, lastname, username, email, password, phoneNumber } = dto;
+  async signup(userDto: CreateUserDto): Promise<SignupRes> {
+
+    const { firstname, lastname, username, email, password, phoneNumber } = userDto;
+
+    // set as staff by default if don't have
+    const user_type = userDto.user_type || UserTypes.Staff;
+    userDto.user_type = user_type;
 
     const attributeList = [];
 
@@ -76,7 +82,7 @@ export class AuthService {
 
     const userType = {
       Name: "custom:user_type",
-      Value: UserTypes.Staff
+      Value: user_type
     };
 
     const attributeEmail = new CognitoUserAttribute(emailData);
@@ -96,7 +102,7 @@ export class AuthService {
 
     try {
 
-      const createUserResult = await new Promise((resolve, reject) => {
+      const createUserResult: any = await new Promise((resolve, reject) => {
         this.userPool.signUp(email, password, attributeList, null, (err, result) => {
           if (err) {
             reject(err.message);
@@ -105,10 +111,15 @@ export class AuthService {
         });
       });
 
-      return createUserResult;
+      return {
+        email: createUserResult.user.username,
+        userSub: createUserResult.userSub,
+        userConfirmed: createUserResult.userConfirmed,
+        user: userDto
+      }
 
     } catch (err) {
-      return new BadRequestException(err);
+      handleExceptions(err);
     }
   }
 

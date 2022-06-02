@@ -1,4 +1,14 @@
-import { AllowNull, BeforeCreate, BeforeUpdate, Column, DataType, Model, Table, Default } from "sequelize-typescript";
+import {
+  AllowNull,
+  BeforeCreate,
+  BeforeUpdate,
+  Column,
+  DataType,
+  Model,
+  Table,
+  Default,
+  Unique
+} from "sequelize-typescript";
 import { CreateUserDto } from "../dto/create-user.dto";
 import bcrypt from "bcryptjs";
 import { UserTypes } from "../../common/constants";
@@ -19,6 +29,7 @@ export class User extends Model {
   username: string;
 
   @AllowNull(false)
+  @Unique(true)
   @Column(DataType.TEXT)
   email: string;
 
@@ -27,9 +38,12 @@ export class User extends Model {
   sub: string;
 
 
-  @Default(UserTypes.Staff)
   @Column(DataType.ENUM({values: Object.keys(UserTypes)}))
   user_type: UserTypes;
+
+  @AllowNull(false)
+  @Column(DataType.BOOLEAN)
+  userConfirmed: boolean;
 
   toJSON() {
     return {...super.toJSON()};
@@ -48,18 +62,6 @@ export class User extends Model {
 
   }
 
-  @BeforeCreate
-  static async encryptPassword(user: CreateUserDto) {
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(user.password, salt);
-  }
-
-  @BeforeUpdate
-  static async bfUpdate(user: any) {
-    if (user.changed("password")) {
-      user.password = await this.createHash(user.password);
-    }
-  }
 
   static async createHash(password) {
     const salt = await bcrypt.genSalt(10);

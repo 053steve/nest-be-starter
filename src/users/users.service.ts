@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { REPOSITORY } from "../common/constants";
 import { User } from "./entities/user.entity";
 import { UserDto } from "./dto/user.dto";
+import { CreateUserInput } from "../auth/auth.interface";
 
 @Injectable()
 export class UsersService {
@@ -13,9 +14,9 @@ export class UsersService {
     private userRepository: typeof User
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserDto> {
+  async create(userData: CreateUserInput): Promise<UserDto> {
 
-    const newUser = await this.userRepository.create(createUserDto);
+    const newUser = await this.userRepository.create(userData);
     return new UserDto(newUser);
   }
 
@@ -37,6 +38,10 @@ export class UsersService {
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return this.userRepository.update(updateUserDto, {where: {id}});
+  }
+
+  updateByEmail(email: string, updateUserDto: UpdateUserDto) {
+    return this.userRepository.update(updateUserDto, {where: {email}});
   }
 
   remove(id: number) {
