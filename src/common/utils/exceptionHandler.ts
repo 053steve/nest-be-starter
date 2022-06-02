@@ -2,7 +2,7 @@ import { InternalServerErrorException, NotFoundException } from '@nestjs/common'
 
 
 
-export const handleExceptions = (err) => {
+export const handleExceptions = (err, message?) => {
   console.log(err);
   switch (err) {
     case 404:

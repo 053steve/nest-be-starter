@@ -41,6 +41,7 @@ export class UsersService {
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
+
     return this.userRepository.update(updateUserDto, {where: {id}});
   }
 
