@@ -22,10 +22,12 @@ export class User extends Model {
   @Column(DataType.TEXT)
   email: string;
 
+  @AllowNull(false)
   @Column(DataType.TEXT)
-  password: string;
+  sub: string;
 
-  @Default(UserTypes.Seller)
+
+  @Default(UserTypes.Staff)
   @Column(DataType.ENUM({values: Object.keys(UserTypes)}))
   user_type: UserTypes;
 

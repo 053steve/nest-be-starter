@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { UsersService } from '../users/users.service'
-import { ConfigService } from '@nestjs/config';
+import { Injectable, BadRequestException } from "@nestjs/common";
+import { UsersService } from "../users/users.service";
+import { ConfigService } from "@nestjs/config";
 
 import {
   CognitoUserPool,
@@ -9,7 +9,7 @@ import {
 
 import bcrypt from "bcryptjs";
 import { LoginResDto } from "./dto/login-res.dto";
-import { User } from '../users/entities/user.entity';
+import { User } from "../users/entities/user.entity";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { ConfirmSignupDto } from "./dto/confirm-signup.dto";
 import { handleExceptions } from "../common/utils/exceptionHandler";
@@ -27,8 +27,8 @@ export class AuthService {
     private readonly configService: ConfigService
   ) {
     this.userPool = new CognitoUserPool({
-      UserPoolId: this.configService.get('cognito.userPoolId'),
-      ClientId: this.configService.get('cognito.clientId')
+      UserPoolId: this.configService.get("cognito.userPoolId"),
+      ClientId: this.configService.get("cognito.clientId")
     });
   }
 
@@ -36,48 +36,48 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<User> {
 
     const user = await this.usersService.findByUserEmail(email);
-    if (user && this.validatePassword(user.password, pass)) {
-      return user;
-    }
+    // if (user && this.validatePassword(user.password, pass)) {
+    //   return user;
+    // }
 
     return null;
   }
 
-  async signup(dto: CreateUserDto):Promise<any> {
+  async signup(dto: CreateUserDto): Promise<any> {
     const { firstname, lastname, username, email, password, phoneNumber } = dto;
 
     const attributeList = [];
 
     // map to cognito user attribute
     const fistNameData = {
-      Name: 'given_name',
-      Value: firstname,
-    }
+      Name: "given_name",
+      Value: firstname
+    };
 
     const lastnameData = {
-      Name: 'family_name',
-      Value: lastname,
-    }
+      Name: "family_name",
+      Value: lastname
+    };
 
     const usernameData = {
-      Name: 'preferred_username',
-      Value: username,
-    }
+      Name: "preferred_username",
+      Value: username
+    };
 
     const emailData = {
-      Name: 'email',
-      Value: email,
-    }
+      Name: "email",
+      Value: email
+    };
 
     const phone_number = {
-      Name: 'phone_number',
-      Value: phoneNumber,
-    }
+      Name: "phone_number",
+      Value: phoneNumber
+    };
 
     const userType = {
-      Name: 'custom:user_type',
+      Name: "custom:user_type",
       Value: UserTypes.Staff
-    }
+    };
 
     const attributeEmail = new CognitoUserAttribute(emailData);
     const attributePhoneNumber = new CognitoUserAttribute(phone_number);
@@ -116,10 +116,11 @@ export class AuthService {
 
     const userData = {
       Username: dto.email,
-      Pool: this.userPool,
+      Pool: this.userPool
     };
 
     try {
+
       const cognitoUser = new CognitoUser(userData);
 
       const confirmResult = await new Promise((resolve, reject) => {
@@ -149,11 +150,6 @@ export class AuthService {
     // const token = this.generateToken(user);
     return new LoginResDto(user);
 
-  }
-
-  async validatePassword(password, comparePass) {
-    const isMatch = await bcrypt.compare(password, comparePass);
-    return isMatch;
   }
 
 
