@@ -3,7 +3,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { LoginReqDto } from './dto/login-req.dto';
 
 
 @Injectable()
@@ -23,8 +22,6 @@ export class CognitoStrategy extends PassportStrategy(Strategy, 'cognito') {
       if (authRes) {
         return authRes;
       }
-
       return null;
-
   }
 }
