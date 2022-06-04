@@ -31,7 +31,6 @@
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/swagger": "^4.8.2",
     "@vendia/serverless-express": "^4.5.4",
-    "amazon-cognito-identity-js": "^5.2.9",
     "aws-lambda": "^1.0.7",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.4.0",

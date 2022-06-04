@@ -8,13 +8,12 @@ export class LoginResDto {
   idToken: string
   accessToken: string
   refreshToken: string
-  user: UserDto
 
-  constructor(authRes: AuthenticateRes, user: UserDto) {
+
+  constructor(authRes: AuthenticateRes) {
 
     this.idToken = authRes.idToken;
     this.accessToken = authRes.accessToken;
     this.refreshToken = authRes.refreshToken;
-    this.user = user;
   }
 }

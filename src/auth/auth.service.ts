@@ -2,10 +2,6 @@ import { Injectable, BadRequestException } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { ConfigService } from "@nestjs/config";
 
-import {
-  CognitoUserPool,
-} from "amazon-cognito-identity-js";
-
 import { LoginResDto } from "./dto/login-res.dto";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { ConfirmSignupDto } from "./dto/confirm-signup.dto";
@@ -20,17 +16,12 @@ import {CognitoService} from '../common/services/cognito.service';
 @Injectable()
 export class AuthService {
 
-  private userPool: CognitoUserPool;
-
   constructor(
     private usersService: UsersService,
     private cognitoService: CognitoService,
     private readonly configService: ConfigService
   ) {
-    this.userPool = new CognitoUserPool({
-      UserPoolId: this.configService.get("cognito.userPoolId"),
-      ClientId: this.configService.get("cognito.clientId")
-    });
+
   }
 
   get secretKey() {
@@ -79,9 +70,9 @@ export class AuthService {
 
   async login(data): Promise<LoginResDto> {
 
-    const foundUser = await this.usersService.findByUserEmail(data.user?.email)
-    const userDto = new UserDto(foundUser.toJSON());
-    return new LoginResDto(data, userDto);
+    // const foundUser = await this.usersService.findByUserEmail(data.user?.email)
+    // const userDto = new UserDto(foundUser.toJSON());
+    return new LoginResDto(data);
 
   }
 

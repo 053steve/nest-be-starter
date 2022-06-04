@@ -20,7 +20,7 @@ export interface CreateUserInput {
 }
 
 export interface AuthenticateRes {
-  user: UserDto,
+  user?: UserDto,
   idToken: string
   accessToken: string
   refreshToken: string

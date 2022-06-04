@@ -28,8 +28,8 @@ export class UsersService {
     return await this.userRepository.findAll<User>({ where: {} });
   }
 
-  findOne(sub: string) {
-    return this.userRepository.findOne({ where: { sub } });
+  findOne(id: string) {
+    return this.userRepository.findOne({ where: { id } });
   }
 
   findByUsername(username: string) {
@@ -44,10 +44,6 @@ export class UsersService {
     return this.userRepository.findOne({ where: { sub } });
   }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return this.userRepository.update(updateUserDto, {where: {id}});
-  // }
-
   async adminUpdate(email: string, updateUserDto: UpdateUserDto) {
     try {
       await this.cognitoService.adminUpdateUserAttributes(email, updateUserDto);
@@ -55,14 +51,14 @@ export class UsersService {
     } catch (err) {
       handleExceptions(err);
     }
-
   }
 
   updateByEmail(email: string, updateUserDto: UpdateUserDto) {
     return this.userRepository.update(updateUserDto, { where: { email } });
   }
 
-  remove(id: number) {
-    return this.userRepository.destroy({ where: { id } });
+  async remove(email: string) {
+    await this.cognitoService.adminDeleteUser(email);
+    return this.userRepository.destroy({ where: { email } });
   }
 }

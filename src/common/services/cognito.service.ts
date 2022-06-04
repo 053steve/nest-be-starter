@@ -1,40 +1,30 @@
 import { ConfigService } from "@nestjs/config";
-import {
-  AuthenticationDetails,
-  CognitoUser,
-  CognitoUserPool
-} from "amazon-cognito-identity-js";
 import { CreateUserDto } from "../../users/dto/create-user.dto";
 import { ConfirmSignupDto } from "../../auth/dto/confirm-signup.dto";
 import { LoginReqDto } from "../../auth/dto/login-req.dto";
 import { AuthenticateRes } from "../../auth/auth.interface";
-import { UserDto } from "../../users/dto/user.dto";
 
 
 import {
   CognitoIdentityProviderClient,
   AdminUpdateUserAttributesCommand,
-  AttributeType,
   SignUpCommand,
-  ConfirmSignUpCommand
+  ConfirmSignUpCommand,
+  InitiateAuthCommand,
+  AdminDeleteUserCommand
 } from "@aws-sdk/client-cognito-identity-provider";
 import { UpdateUserDto } from "../../users/dto/update-user.dto";
 import { Injectable } from "@nestjs/common";
+import { AUTH_FLOW } from "../constants";
 
 @Injectable()
 export class CognitoService {
 
-  private userPool: CognitoUserPool;
   private client: CognitoIdentityProviderClient;
 
   constructor(
     private readonly configService: ConfigService
   ) {
-
-    this.userPool = new CognitoUserPool({
-      UserPoolId: this.configService.get("cognito.userPoolId"),
-      ClientId: this.configService.get("cognito.clientId")
-    });
 
     this.client = new CognitoIdentityProviderClient({
       region: this.configService.get("aws.region"),
@@ -137,58 +127,29 @@ export class CognitoService {
 
   async authenticate(dto: LoginReqDto): Promise<AuthenticateRes> {
 
-    const authData = {
-      Username: dto.email,
-      Password: dto.password
+    const authInput = {
+      AuthFlow: AUTH_FLOW.USER_PASSWORD_AUTH,
+      ClientId: this.configService.get('cognito.clientId'),
+      AuthParameters: {
+        USERNAME: dto.email,
+        PASSWORD: dto.password
+      }
+    }
+
+    const command = new InitiateAuthCommand(authInput);
+
+    const result = await this.client.send(command);
+    return {
+      accessToken: result.AuthenticationResult.AccessToken,
+      idToken: result.AuthenticationResult.IdToken,
+      refreshToken: result.AuthenticationResult.RefreshToken
     };
-
-    const authDetails = new AuthenticationDetails(authData);
-
-    const userData = {
-      Username: dto.email,
-      Pool: this.userPool
-    };
-
-    const cognitoUser = new CognitoUser(userData);
-
-
-    const authRes: AuthenticateRes = await new Promise((resolve, reject) => {
-      cognitoUser.authenticateUser(authDetails, {
-        onSuccess: (result) => {
-          const accessToken = result.getAccessToken().getJwtToken();
-          const idToken = result.getIdToken().getJwtToken();
-          const refreshToken = result.getRefreshToken().getToken();
-          const payload = result.getIdToken().decodePayload();
-          const user = new UserDto(payload);
-
-          resolve({
-            accessToken,
-            idToken,
-            refreshToken,
-            user
-          });
-        },
-        onFailure: (err) => {
-          reject(err);
-        }
-      });
-    });
-
-
-    return authRes;
 
   }
 
   async adminUpdateUserAttributes(targetEmail: string, dto: UpdateUserDto): Promise<void> {
 
-    // const attributeList = this.mapObjToCognitoAttributeList(dto);
-    const attributeList: AttributeType[] = [];
-    const testData = {
-      Name: 'given_name',
-      Value: 'Steve'
-    }
-
-    attributeList.push(testData);
+    const attributeList = this.mapObjToCognitoAttributeList(dto);
 
     const updateInput = {
       UserPoolId: this.configService.get("cognito.userPoolId"),
@@ -197,6 +158,18 @@ export class CognitoService {
     }
 
     const command = new AdminUpdateUserAttributesCommand(updateInput);
+    const result = await this.client.send(command);
+    return;
+  }
+
+  async adminDeleteUser(targetEmail: string): Promise<void> {
+
+    const input = {
+      UserPoolId: this.configService.get("cognito.userPoolId"),
+      Username: targetEmail,
+    }
+
+    const command = new AdminDeleteUserCommand(input);
     const result = await this.client.send(command);
     return;
   }

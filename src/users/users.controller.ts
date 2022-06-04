@@ -44,10 +44,10 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @Get(':id')
+  @Get(':email')
   @HttpCode(200)
-  findOne(@Param('sub') sub: string) {
-    return this.usersService.findOne(sub);
+  findOne(@Param('email') email: string) {
+    return this.usersService.findByUserEmail(email);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -60,9 +60,9 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @Delete(':id')
+  @Delete(':email')
   @HttpCode(200)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.remove(+id);
+  remove(@Param('email') email: string) {
+    return this.usersService.remove(email);
   }
 }
