@@ -8,6 +8,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { CognitoStrategy } from './cognito.strategy';
 import {HttpModule} from '@nestjs/axios';
+import { CommonModule } from "../common/common.module";
+
+// import {CognitoService} from '../common/services/cognito.service';
 
 
 
@@ -20,12 +23,13 @@ import {HttpModule} from '@nestjs/axios';
     JwtModule.register({
 
     }),
-    HttpModule
+    HttpModule,
+    CommonModule
   ],
   providers: [
     AuthService,
     JwtStrategy,
-    CognitoStrategy
+    CognitoStrategy,
   ],
   controllers: [AuthController]
 })

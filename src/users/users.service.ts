@@ -6,6 +6,7 @@ import { User } from "./entities/user.entity";
 import { UserDto } from "./dto/user.dto";
 import { CreateUserInput } from "../auth/auth.interface";
 import { CognitoService } from "../common/services/cognito.service";
+import { handleExceptions } from "../common/utils/exceptionHandler";
 
 @Injectable()
 export class UsersService {
@@ -27,8 +28,8 @@ export class UsersService {
     return await this.userRepository.findAll<User>({ where: {} });
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOne({ where: { id } });
+  findOne(sub: string) {
+    return this.userRepository.findOne({ where: { sub } });
   }
 
   findByUsername(username: string) {
@@ -47,9 +48,14 @@ export class UsersService {
   //   return this.userRepository.update(updateUserDto, {where: {id}});
   // }
 
-  async adminUpdate(sub: string, updateUserDto: UpdateUserDto) {
-    await this.cognitoService.adminUpdateUserAttributes(updateUserDto);
-    return this.userRepository.update(updateUserDto, { where: { sub } });
+  async adminUpdate(email: string, updateUserDto: UpdateUserDto) {
+    try {
+      await this.cognitoService.adminUpdateUserAttributes(email, updateUserDto);
+      return this.userRepository.update(updateUserDto, { where: { email } });
+    } catch (err) {
+      handleExceptions(err);
+    }
+
   }
 
   updateByEmail(email: string, updateUserDto: UpdateUserDto) {

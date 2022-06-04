@@ -49,9 +49,9 @@ export class AuthService {
       const createUserResult: any = await this.cognitoService.signup(userDto);
 
       return {
-        email: createUserResult.user.username,
-        userSub: createUserResult.userSub,
-        userConfirmed: createUserResult.userConfirmed,
+        email: userDto.email,
+        userSub: createUserResult.UserSub,
+        userConfirmed: createUserResult.UserConfirmed,
         user: userDto
       };
 
@@ -66,7 +66,7 @@ export class AuthService {
 
       const confirmResult = await this.cognitoService.confirmSignup(dto)
 
-      if (confirmResult === AUTH_CONFIRM_RESULT.SUCCESS) {
+      if (confirmResult) {
         return confirmResult;
       } else {
         throw 404;

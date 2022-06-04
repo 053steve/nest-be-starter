@@ -46,16 +46,16 @@ export class UsersController {
   @ApiBearerAuth('JWT-auth')
   @Get(':id')
   @HttpCode(200)
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('sub') sub: string) {
+    return this.usersService.findOne(sub);
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @Patch(':sub')
+  @Patch(':email')
   @HttpCode(200)
-  update(@Param('sub') sub: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.adminUpdate(sub, updateUserDto);
+  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.adminUpdate(email, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)

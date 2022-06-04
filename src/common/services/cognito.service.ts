@@ -11,10 +11,17 @@ import { AuthenticateRes } from "../../auth/auth.interface";
 import { UserDto } from "../../users/dto/user.dto";
 
 
-import { CognitoIdentityProviderClient, AdminUpdateUserAttributesCommand } from "@aws-sdk/client-cognito-identity-provider";
+import {
+  CognitoIdentityProviderClient,
+  AdminUpdateUserAttributesCommand,
+  AttributeType,
+  SignUpCommand,
+  ConfirmSignUpCommand
+} from "@aws-sdk/client-cognito-identity-provider";
 import { UpdateUserDto } from "../../users/dto/update-user.dto";
+import { Injectable } from "@nestjs/common";
 
-
+@Injectable()
 export class CognitoService {
 
   private userPool: CognitoUserPool;
@@ -32,44 +39,44 @@ export class CognitoService {
     this.client = new CognitoIdentityProviderClient({
       region: this.configService.get("aws.region"),
       credentials: {
-        accessKeyId: this.configService.get("aws.accessKeyId"),
-        secretAccessKey: this.configService.get("aws.secretAccessKey"),
+        accessKeyId: this.configService.get("aws.accessKey"),
+        secretAccessKey: this.configService.get("aws.secretKey"),
       }
     });
   }
 
+
   async signup(userDto: CreateUserDto) {
+    const {email, password} = userDto;
+
+
     const attributeList = this.mapObjToCognitoAttributeList(userDto);
 
-    return await new Promise((resolve, reject) => {
-      this.userPool.signUp(userDto.email, userDto.password, attributeList, null, (err, result) => {
-        if (err) {
-          reject(err.message);
-        }
-        resolve(result);
-      });
-    });
+    const signUpInput = {
+      Username: email,
+      Password: password,
+      ClientId: this.configService.get('cognito.clientId'),
+      UserAttributes: attributeList
+    }
+
+    const command = new SignUpCommand(signUpInput);
+
+    const result = await this.client.send(command);
+    return result;
+
   }
 
+
   async confirmSignup(dto: ConfirmSignupDto) {
+    const input = {
+      ClientId: this.configService.get('cognito.clientId'),
+      ConfirmationCode: dto.verifyCode,
+      Username: dto.email
+    }
 
-    const userData = {
-      Username: dto.email,
-      Pool: this.userPool
-    };
-
-    const cognitoUser = new CognitoUser(userData);
-
-    return await new Promise((resolve, reject) => {
-      cognitoUser.confirmRegistration(dto.verifyCode, true, function(err, result) {
-        if (err) {
-          reject(err.message);
-          return;
-        }
-        resolve(result);
-      });
-    });
-
+    const command = new ConfirmSignUpCommand(input);
+    const result = await this.client.send(command);
+    return result;
   }
 
   mapObjToCognitoAttributeList = (userDto) => {
@@ -78,37 +85,50 @@ export class CognitoService {
     // map to cognito user attribute
     for (const [key, value] of Object.entries(userDto)) {
 
-      let objName = {};
+      let dataObj;
 
       switch (key) {
         case "firstname":
-          objName = "given_name";
+          dataObj = {
+            Name: "given_name",
+            Value: value
+          };
           break;
 
         case "lastname":
-          objName = "family_name";
+          dataObj = {
+            Name: "family_name",
+            Value: value
+          };
           break;
 
         case "username":
-          objName = "preferred_username";
+          dataObj = {
+            Name: "preferred_username",
+            Value: value
+          };
           break;
 
         case "email":
-          objName = "email";
+          dataObj = {
+            Name: "email",
+            Value: value
+          };
           break;
 
         case "phoneNumber":
-          objName = "phone_number";
+          dataObj = {
+            Name: "phone_number",
+            Value: value
+          };
           break;
 
       }
 
-      const dataObj = {
-        Name: objName,
-        Value: value
-      };
 
-      attributeList.push(dataObj);
+      if (dataObj) {
+        attributeList.push(dataObj);
+      }
 
     }
 
@@ -159,13 +179,20 @@ export class CognitoService {
 
   }
 
-  async adminUpdateUserAttributes(dto: UpdateUserDto): Promise<void> {
+  async adminUpdateUserAttributes(targetEmail: string, dto: UpdateUserDto): Promise<void> {
 
-    const attributeList = this.mapObjToCognitoAttributeList(dto);
+    // const attributeList = this.mapObjToCognitoAttributeList(dto);
+    const attributeList: AttributeType[] = [];
+    const testData = {
+      Name: 'given_name',
+      Value: 'Steve'
+    }
+
+    attributeList.push(testData);
 
     const updateInput = {
       UserPoolId: this.configService.get("cognito.userPoolId"),
-      Username: dto.username,
+      Username: targetEmail,
       UserAttributes: attributeList
     }
 
