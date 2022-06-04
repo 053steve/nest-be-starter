@@ -52,10 +52,10 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @Patch(':id')
+  @Patch(':sub')
   @HttpCode(200)
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('sub') sub: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.adminUpdate(sub, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)

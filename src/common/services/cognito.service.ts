@@ -11,9 +11,14 @@ import { AuthenticateRes } from "../../auth/auth.interface";
 import { UserDto } from "../../users/dto/user.dto";
 
 
+import { CognitoIdentityProviderClient, AdminUpdateUserAttributesCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { UpdateUserDto } from "../../users/dto/update-user.dto";
+
+
 export class CognitoService {
 
   private userPool: CognitoUserPool;
+  private client: CognitoIdentityProviderClient;
 
   constructor(
     private readonly configService: ConfigService
@@ -22,6 +27,14 @@ export class CognitoService {
     this.userPool = new CognitoUserPool({
       UserPoolId: this.configService.get("cognito.userPoolId"),
       ClientId: this.configService.get("cognito.clientId")
+    });
+
+    this.client = new CognitoIdentityProviderClient({
+      region: this.configService.get("aws.region"),
+      credentials: {
+        accessKeyId: this.configService.get("aws.accessKeyId"),
+        secretAccessKey: this.configService.get("aws.secretAccessKey"),
+      }
     });
   }
 
@@ -144,6 +157,21 @@ export class CognitoService {
 
     return authRes;
 
+  }
+
+  async adminUpdateUserAttributes(dto: UpdateUserDto): Promise<void> {
+
+    const attributeList = this.mapObjToCognitoAttributeList(dto);
+
+    const updateInput = {
+      UserPoolId: this.configService.get("cognito.userPoolId"),
+      Username: dto.username,
+      UserAttributes: attributeList
+    }
+
+    const command = new AdminUpdateUserAttributesCommand(updateInput);
+    const result = await this.client.send(command);
+    return;
   }
 
 }
