@@ -1,1 +1,1 @@
-This is a starter package for creating nest js BE services
+Starter package recipe for creating nest js BE services (nest + sequelize + aws cognito)
