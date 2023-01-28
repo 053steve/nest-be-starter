@@ -23,14 +23,14 @@ export class AuthController {
     private userService: UsersService
   ) { }
 
-  @UseGuards(CognitoAuthGuard)
   @Post("login")
   @HttpCode(200)
   @ApiImplicitBody({ content: null, name: "user", type: LoginReqDto })
   async login(
     @Request() req
   ) {
-    return this.authService.login(req.user);
+    const response = await this.authService.authenticate(req.body);
+    return this.authService.login(response);
   }
 
   @Post("signup")

@@ -17,10 +17,14 @@ import { UpdateUserDto } from "../../users/dto/update-user.dto";
 import { Injectable } from "@nestjs/common";
 import { AUTH_FLOW } from "../constants";
 
+
+
+
 @Injectable()
 export class CognitoService {
 
   private client: CognitoIdentityProviderClient;
+  private verifierClient;
 
   constructor(
     private readonly configService: ConfigService
@@ -33,11 +37,12 @@ export class CognitoService {
         secretAccessKey: this.configService.get("aws.secretKey"),
       }
     });
+
   }
 
 
   async signup(userDto: CreateUserDto) {
-    const {email, password} = userDto;
+    const { email, password } = userDto;
 
 
     const attributeList = this.mapObjToCognitoAttributeList(userDto);
