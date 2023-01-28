@@ -37,9 +37,11 @@ export class AuthController {
   @HttpCode(201)
   async signup(@Body() createUserDto: CreateUserDto) {
     const cognitoUserRes = await this.authService.signup(createUserDto);
+    // console.log('yo');
+    // console.log('got here');
 
     // will need to save username and userSub when create in local DB
-    const newUser = this.userService.create({
+    const newUser = await this.userService.create({
       email: cognitoUserRes.email,
       sub: cognitoUserRes.userSub,
       userConfirmed: cognitoUserRes.userConfirmed,

@@ -19,6 +19,8 @@ export class CognitoStrategy extends PassportStrategy(Strategy, 'cognito') {
   async validate(req: Request): Promise<any> {
       const body = req.body as any
       const authRes = await this.authService.authenticate(body);
+      console.log('authRes');
+      console.log(authRes);
       if (authRes) {
         return authRes;
       }

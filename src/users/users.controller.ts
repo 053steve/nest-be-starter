@@ -17,8 +17,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+// import { CognitoAuthGuard } from '../auth/cognito.guard';
 import { UserDto } from "./dto/user.dto";
-import { AuthGuard } from "@nestjs/passport";
 
 
 @ApiTags('users')
