@@ -5,8 +5,7 @@ import {
   UseGuards, HttpCode, Body
 } from "@nestjs/common";
 import { LoginReqDto } from "./dto/login-req.dto";
-import { ApiImplicitBody } from "@nestjs/swagger/dist/decorators/api-implicit-body.decorator";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiTags, ApiBody } from "@nestjs/swagger";
 import {CognitoAuthGuard} from './cognito.guard';
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "../users/dto/create-user.dto";
@@ -25,7 +24,7 @@ export class AuthController {
 
   @Post("login")
   @HttpCode(200)
-  @ApiImplicitBody({ content: null, name: "user", type: LoginReqDto })
+  @ApiBody({ type: [LoginReqDto] })
   async login(
     @Request() req
   ) {

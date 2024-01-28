@@ -11,7 +11,7 @@ export default () => ({
       max: parseInt(process.env.DB_POOL_MAX) || 5,
       min: parseInt(process.env.DB_POOL_MIN) || 0,
       acquire: parseInt(process.env.DB_POOL_ACQUIRE) || 30000,
-      idle: parseInt(process.env.DB_POOL_IDLE)
+      idle: parseInt(process.env.DB_POOL_IDLE) || 10000
     }
   },
   salt: process.env.SALT,
@@ -24,5 +24,8 @@ export default () => ({
     accessKey: process.env.AWS_ACCESS_KEY,
     secretKey: process.env.AWS_SECRET_KEY,
     region: process.env.AWS_REGION
+  },
+  s3: {
+    awsBucket: process.env.AWS_BUCKET
   }
 });

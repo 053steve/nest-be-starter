@@ -12,6 +12,8 @@ export const databaseProviders = [
     provide: "SEQUELIZE",
     inject: [ConfigService],
     useFactory: async (configService: ConfigService) => {
+      
+
       const sequelize = new Sequelize({
         dialect: configService.get('database.dialect'),
         dialectModule: pg,
@@ -19,7 +21,14 @@ export const databaseProviders = [
         port: configService.get<number>('database.port'),
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
-        database: configService.get<string>('database.database'),
+        database: configService.get<string>('database.database'),      
+        dialectOptions: {          
+          ssl: {
+            require: true,
+            native: true,
+            rejectUnauthorized: false,
+          },
+        },        
         pool: {
           max: configService.get<number>('database.pool.max'),
           min: configService.get<number>('database.pool.min'),
