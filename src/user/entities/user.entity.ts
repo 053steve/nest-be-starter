@@ -37,6 +37,9 @@ export class User extends Model {
   @Column(DataType.TEXT)
   sub: string;
 
+  @AllowNull(true)
+  @Column(DataType.TEXT)
+  providers: string;
 
   @Column(DataType.ENUM({values: Object.keys(UserTypes)}))
   user_type: UserTypes;

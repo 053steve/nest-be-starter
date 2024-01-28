@@ -1,15 +1,15 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
-import { UsersService } from "../users/users.service";
+import { UsersService } from "../user/user.service";
 import { ConfigService } from "@nestjs/config";
 
 import { LoginResDto } from "./dto/login-res.dto";
-import { CreateUserDto } from "../users/dto/create-user.dto";
+import { CreateUserDto } from "../user/dto/create-user.dto";
 import { ConfirmSignupDto } from "./dto/confirm-signup.dto";
 import { handleExceptions } from "../common/utils/exceptionHandler";
 import { AUTH_CONFIRM_RESULT, UserTypes } from "../common/constants";
 import { AuthenticateRes, SignupRes } from "./auth.interface";
 import { LoginReqDto } from "./dto/login-req.dto";
-import { UserDto } from "../users/dto/user.dto";
+import { UserDto } from "../user/dto/user.dto";
 import {CognitoService} from '../common/services/cognito.service';
 
 

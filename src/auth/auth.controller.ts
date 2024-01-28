@@ -8,9 +8,9 @@ import { LoginReqDto } from "./dto/login-req.dto";
 import { ApiTags, ApiBody } from "@nestjs/swagger";
 import {CognitoAuthGuard} from './cognito.guard';
 import { AuthService } from "./auth.service";
-import { CreateUserDto } from "../users/dto/create-user.dto";
+import { CreateUserDto } from "../user/dto/create-user.dto";
 import { ConfirmSignupDto } from "./dto/confirm-signup.dto";
-import { UsersService } from "../users/users.service";
+import { UsersService } from "../user/user.service";
 import { UserTypes } from "src/common/constants";
 
 

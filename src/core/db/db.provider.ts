@@ -2,7 +2,7 @@ require('./pgEnum-fix');
 import * as pg from 'pg';
 import { Sequelize } from "sequelize-typescript";
 import { ConfigService } from '@nestjs/config';
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 
 

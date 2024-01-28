@@ -1,6 +1,6 @@
-import { UserDto } from "../../users/dto/user.dto";
+import { UserDto } from "../../user/dto/user.dto";
 import { AuthenticateRes } from "../auth.interface";
-import { User } from "../../users/entities/user.entity";
+import { User } from "../../user/entities/user.entity";
 
 
 export class LoginResDto {

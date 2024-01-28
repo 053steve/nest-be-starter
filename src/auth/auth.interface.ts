@@ -1,5 +1,5 @@
-import { CreateUserDto } from "../users/dto/create-user.dto";
-import { UserDto } from "../users/dto/user.dto";
+import { CreateUserDto } from "../user/dto/create-user.dto";
+import { UserDto } from "../user/dto/user.dto";
 
 export interface SignupRes {
   email: string

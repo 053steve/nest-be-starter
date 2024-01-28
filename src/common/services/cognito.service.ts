@@ -1,5 +1,5 @@
 import { ConfigService } from "@nestjs/config";
-import { CreateUserDto } from "../../users/dto/create-user.dto";
+import { CreateUserDto } from "../../user/dto/create-user.dto";
 import { ConfirmSignupDto } from "../../auth/dto/confirm-signup.dto";
 import { LoginReqDto } from "../../auth/dto/login-req.dto";
 import { AuthenticateRes } from "../../auth/auth.interface";
@@ -13,7 +13,7 @@ import {
   InitiateAuthCommand,
   AdminDeleteUserCommand
 } from "@aws-sdk/client-cognito-identity-provider";
-import { UpdateUserDto } from "../../users/dto/update-user.dto";
+import { UpdateUserDto } from "../../user/dto/update-user.dto";
 import { Injectable } from "@nestjs/common";
 import { AUTH_FLOW } from "../constants";
 
